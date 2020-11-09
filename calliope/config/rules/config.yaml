@@ -46,7 +46,7 @@ run:
       decisions according to user inputs and optimises timeseries
       decision variables using a rolling horizon method
   objective_options:
-    validator: objective_options_validation
+    # validator: objective_options_validation
     cost_class:
       type: Dict #CostClassDict  # TODO: decide on whether to enforce this type check now or to check back with this dictionary only once the data has been loaded (in which case the type would be a Dict)
       doc: |

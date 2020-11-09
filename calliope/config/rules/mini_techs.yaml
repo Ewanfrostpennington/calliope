@@ -1,0 +1,116 @@
+# exists:
+#   type: bool
+#   default: True
+#   doc: If True, the technology exists, if False, it does not. Allows overrides to remove technologies, for example, on a per-scenario basis.
+essentials:
+  # parent:
+  #   type: str
+  #   doc: Parent tech_group. Must always be defined.
+  color:
+    type: Color
+    doc: Color to use for plotting. If not defined, a random one will be chosen.
+    optional: True
+  name:
+    type: str
+    doc: Name of technology. Used for plotting and analysis.
+  constraints:
+    energy_cap_max:
+      type: PositiveFloat
+      scaling_label: power
+      default: .inf
+      doc: Maximum installed energy capacity, limits decision variables ``carrier_prod``/``carrier_con`` to a maximum/minimum.
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+    energy_cap_min:
+      type: confloat
+      scaling_label: power
+      default: 0
+      opts: {ge: 0}
+      doc: Minimum installed energy capacity, limits decision variables ``carrier_prod``/``carrier_con`` to a minimum/maximum.
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+    energy_eff:
+      type: confloat # FIXME: also allow FileWithSubset
+      opts: {ge: 0, le: 1}
+      default: 1.0
+      doc: Energy efficiency, conversion efficiency (static, or from file as timeseries), from ``resource``/``storage``/``carrier_in`` (tech dependent) to ``carrier_out``.
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+    energy_eff_per_distance:
+      type: confloat # FIXME: also allow FileWithSubset
+      opts: {ge: 0, le: 1}
+      scaling_label: per_distance
+      default: 1.0
+      doc: Energy efficiency per distance, set as value between 1 (no loss) and 0 (all energy lost).
+      validator: inheritance
+      validator_params:
+        allowed_in: [transmission]
+    energy_prod:
+      type: bool
+      default: False 
+      doc: Energy production, allow this technology to supply energy to the carrier.
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+    lifetime:
+      type: PositiveFloat
+      scaling_label: years
+      doc: Technology lifetime, must be defined if fixed capital costs are defined. A reasonable value for many technologies is around 20-25 years.
+      optional: True
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+    resource:
+      type: confloat # FIXME: also allow FileWithSubset
+      opts: {ge: 0}
+      default: 0
+      doc: Available resource, maximum available resource (static, or from file as timeseries). Unit dictated by ``resource_unit``. Unit can be energy, energy per unit area, or energy per unit technology capacity.
+      validator: inheritance
+      validator_params:
+        allowed_in: [demand, supply, supply_plus]
+    resource_array:  # alternate to FileWithSubset
+      type: ConfFilePath
+      optional: True
+    resource_unit:  # FIXME this needs a better solution
+      type: Literal
+      opts: [energy, energy_per_area, energy_per_cap]
+      default: energy
+      doc: Resource unit, sets the unit of ``resource`` to either ``energy`` (e.g. kWh), ``energy_per_area`` (e.g. kWh/m2), or ``energy_per_cap`` (e.g. kWh/kW). ``energy_per_area`` uses the ``resource_area`` decision variable to scale the available resource while ``energy_per_cap`` uses the ``energy_cap`` decision variable.
+      validator: inheritance
+      validator_params:
+        allowed_in: [demand, supply, supply_plus]
+    resource_area_per_energy_cap:
+      type: PositiveFloat
+      scaling_label: area_per_power
+      optional: True
+      doc: Resource area per energy capacity, if set, forces ``resource_area`` to follow ``energy_cap`` with the given numerical ratio (e.g. setting to 1.5 means that ``resource_area == 1.5 * energy_cap``).
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus]
+    resource_area_max:
+      type: PositiveFloat
+      scaling_label: area
+      default: .inf
+      doc: Maximum usable resource area, enforces a maximum usable area for the technology, which may influence resource availability.
+      validator: inheritance
+      validator_params:
+        allowed_in: [supply, supply_plus]
+
+# label:
+#   type: str
+# # carrier:
+#   type: Dict
+#   opts: [str, bool]
+# constraints:
+# costs:
+#   type: Dict
+  # monetary:
+  #   energy_cap:
+  #     type: float
+  #   om_annual:
+  #     type: float
+  #   om_prod:
+  #     type: float
