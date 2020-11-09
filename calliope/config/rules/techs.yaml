@@ -3,60 +3,61 @@ exists:
   default: True
   doc: If True, the technology exists, if False, it does not. Allows overrides to remove technologies, for example, on a per-scenario basis.
 essentials:
-  parent:
-    type: str
-    doc: Parent tech_group. Must always be defined.
-  carrier:
-    validator: carrier_key_choice_validation
-    in:
+  carrier_in:
       type: List
       opts: [str]
       optional: True
       doc: Primary carrier(s) to consume.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion, demand, storage, transmission, conversion_plus]
-    in_2:
+        - allowed_in: [conversion, demand, storage, transmission, conversion_plus]
+        - excluded: [resource]
+  carrier_in_2:
       type: List
       opts: [str]
       optional: True
       doc: Secondary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion_plus]
-    in_3:
+        - allowed_in: [conversion_plus]
+        - excluded: [resource]
+  carrier_in_3:
       type: List
       opts: [str]
       optional: True
       doc: Tertiary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion_plus]
-    out:
+        - allowed_in: [conversion_plus]
+        - excluded: [resource]
+  carrier_out:
       type: List
       opts: [str]
       optional: True
       doc: Primary carrier(s) to produce.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion, supply, supply_plus, storage, transmission, conversion_plus]
-    out_2:
+        - allowed_in: [conversion, supply, supply_plus, storage, transmission, conversion_plus]
+        - excluded: [resource]
+  carrier_out_2:
       type: List
       opts: [str]
       optional: True
       doc: Secondary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion_plus]
-    out_3:
+        - allowed_in: [conversion_plus]
+        - excluded: [resource]
+  carrier_out_3:
       type: List
       opts: [str]
       optional: True
       doc: Tertiary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: inheritance
+      validator: [inheritance, not_resource]
       validator_params:
-        allowed_in: [conversion_plus]
-    primary_in:
+        - allowed_in: [conversion_plus]
+        - excluded: [resource]
+  carrier_primary_in:
       type: str
       doc: Selects the primary input carrier to associate with costs & constraints (if multiple primary input carriers are assigned).
       optional: True
@@ -64,7 +65,7 @@ essentials:
       validator_params:
         - allowed_in: [conversion_plus]
         - direction: 'in'
-    primary_out:
+  carrier_primary_out:
       type: str
       doc: Selects the primary output carrier to associate with costs & constraints (if multiple primary output carriers are assigned).
       optional: True
@@ -72,7 +73,7 @@ essentials:
       validator_params:
         - allowed_in: [conversion_plus]
         - direction: 'out'
-    export:
+  carrier_export:
       type: str
       doc: choice of carrier that can be exported, if choosing to allow the technology to export
       optional: True
@@ -126,7 +127,7 @@ essentials:
     coeff_of_performance:
       type: PositiveFloat
       default: 1
-      doc: Coefficient of performance for energy conversion devices 
+      doc: Coefficient of performance for energy conversion devices
       validator: inheritance
       validator_params:
         allowed_in: [conversion, conversion_plus]
@@ -250,7 +251,7 @@ essentials:
         allowed_in: [transmission]
     energy_prod:
       type: bool
-      default: False 
+      default: False
       doc: Energy production, allow this technology to supply energy to the carrier.
       validator: inheritance
       validator_params:
@@ -283,9 +284,12 @@ essentials:
       type: bool
       default: False
       doc: Force resource, forces this technology to use all available ``resource``, rather than making it a maximum upper boundary (for production) or minimum lower boundary (for consumption).
-      validator: inheritance
+      validator:
+        - inheritance
+        - finite_forced_resource
       validator_params:
-        allowed_in: [supply, supply_plus, demand]
+        - allowed_in: [supply, supply_plus, demand]
+        - {}
     lifetime:
       type: PositiveFloat
       scaling_label: years
@@ -447,9 +451,12 @@ essentials:
       default: 0
       opts: {ge: 0, le: 1}
       doc: Initial storage level, set stored energy in device at the first timestep, as a fraction of total storage capacity.
-      validator: inheritance
+      validator:
+        - inheritance
+        - gte_storage_discharge_depth
       validator_params:
-        allowed_in: [storage, supply_plus]
+        - allowed_in: [storage, supply_plus]
+        - {}
     storage_loss:
       type: confloat # FIXME:, FileWithSubset]
       scaling_label: per_time
@@ -463,34 +470,47 @@ essentials:
       type: PositiveInt
       optional: True
       doc: Specific number of installed units, specific number of installed units. Turns the model from LP to MILP.
-      validator: inheritance
+      validator: [inheritance, energy_cap_per_unit]
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - {}
     units_equals_systemwide:
       type: PositiveInt
       optional: True
       doc: System-wide specific number installed of units, turns the model from LP to MILP.
-      validator: inheritance
+      validator:
+        - inheritance
+        - energy_cap_per_unit
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - {}
     units_max:
       type: PositiveInt
       optional: True
       doc: Maximum number of purchased units, turns the model from LP to MILP.
-      validator: inheritance
+      validator:
+        - inheritance
+        - energy_cap_per_unit
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - {}
     units_max_systemwide:
       type: PositiveInt
       optional: True
       doc: System-wide maximum number installed of units, turns the model from LP to MILP.
-      validator: inheritance
+      validator:
+        - inheritance
+        - energy_cap_per_unit
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - {}
     units_min:
       type: PositiveInt
       default: 0
       doc: Minimum number installed of units, turns the model from LP to MILP.
-      validator: inheritance
+      validator:
+        - inheritance
+        - energy_cap_per_unit
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - {}
