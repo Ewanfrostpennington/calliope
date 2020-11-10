@@ -21,7 +21,6 @@ run:
         Optional configuration for the solvers, using python interface
         notation for the specific solver
 
-
   bigM:
     type: PositiveFloat
     default: !!float 1e9
@@ -65,13 +64,13 @@ run:
         objective options `sense` and `cost_class`
   operate_options:
     horizon:
-      type: Text  # pandas.Timedelta
+      type: Text # pandas.Timedelta
       doc: |
         The time horizon of the rolling horizon optimisation, which
         must be less than or equal to the time window
     window:
-      validator: range_check  # window >= horizon, i.e. the same as [min, max]
-      type: Text  # pandas.Timedelta
+      validator: range_check # window >= horizon, i.e. the same as [min, max]
+      type: Text # pandas.Timedelta
       doc: "The time window for the rolling horizon optimisation"
     use_cap_results:
       type: bool
@@ -95,7 +94,7 @@ run:
         Any value coming out of the backend that is smaller than this
         threshold (due to floating point errors, probably) will be set
         to zero
-    compute_metrics:  # TODO: what to call these? metrics? indicators? stats?
+    compute_metrics: # TODO: what to call these? metrics? indicators? stats?
       type: bool
       default: true
       doc: |
@@ -104,16 +103,21 @@ run:
 model:
   calliope_version:
     type: Text
-    validator: calliope_version_validation
+    validator: calliope_version_validator
   name:
     type: Text
   random_seed:
     type: int
   reserve_margin:
-    type: Dict  # TODO: move this out
+    type: Dict # TODO: move this out
     doc: |
       Per-carrier system-wide reserve margins, defined as key:value
       pairs of carrier:reserve margin
+  # file_allowed:
+  #   type: List
+  #   opts: [str]
+  #   doc: add a flag for each resource, that are allowed to have constraints specified by files (e.g. time series)
+  # see https://github.com/calliope-project/calliope/blob/rules/calliope/config/defaults.yaml:45
   subset_time:
     type: List
     validator: range_check
@@ -182,6 +186,8 @@ model:
   #           options
   #       function_options:
   #         validator: function_option_validation
+  #         # TODO: maybe storage_inter_cluster goes here, what's the value,
+  #         # how to be compatible with the other keys?
   #         clustering_func:
   #           type: Union[Literal, FileWithSubset]
   #           opts: ['kmeans', 'hierarchical']
@@ -213,14 +219,14 @@ model:
       configuration file. Whenever you point to a timeseries file in
       the remainder of the model configuration, it will be relative to
       this path
-#   timeseries_data:  # TODO: get rid of this, as it is exposing implementation to the user
-#     type: Dict
-#     validator: timeseries_data_validation
-#     doc: |
-#       Dictionary of string:pandas.DataFrame pairs defining the
-#       tineseries data used in the model. This is usually populated by
-#       Calliope, using all instances of `file=` in the model
-#       configuration.
+  #   timeseries_data:  # TODO: get rid of this, as it is exposing implementation to the user
+  #     type: Dict
+  #     validator: timeseries_data_validation
+  #     doc: |
+  #       Dictionary of string:pandas.DataFrame pairs defining the
+  #       tineseries data used in the model. This is usually populated by
+  #       Calliope, using all instances of `file=` in the model
+  #       configuration.
   timeseries_dateformat:
     type: Text
     validator: timeseries_dateformat_validation

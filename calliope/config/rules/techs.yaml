@@ -4,83 +4,99 @@ exists:
   doc: If True, the technology exists, if False, it does not. Allows overrides to remove technologies, for example, on a per-scenario basis.
 essentials:
   carrier_in:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Primary carrier(s) to consume.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion, demand, storage, transmission, conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Primary carrier(s) to consume.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in: [conversion, demand, storage, transmission, conversion_plus]
+      - excluded: [resource]
   carrier_in_2:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Secondary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Secondary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - excluded: [resource]
   carrier_in_3:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Tertiary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Tertiary carrier(s) to consume. Conversion_plus technologies only.  It can be a single string, or a list of strings
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - excluded: [resource]
   carrier_out:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Primary carrier(s) to produce.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion, supply, supply_plus, storage, transmission, conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Primary carrier(s) to produce.  It can be a single string, or a list of strings. list is only available to conversion_plus technologies
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in:
+          [
+            conversion,
+            supply,
+            supply_plus,
+            storage,
+            transmission,
+            conversion_plus,
+          ]
+      - excluded: [resource]
   carrier_out_2:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Secondary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Secondary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - excluded: [resource]
   carrier_out_3:
-      type: List
-      opts: [str]
-      optional: True
-      doc: Tertiary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
-      validator: [inheritance, not_resource]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - excluded: [resource]
+    type: List
+    opts: [str]
+    optional: True
+    doc: Tertiary carrier(s) to produce. Conversion_plus technologies only.  It can be a single string, or a list of strings
+    validator: [inheritance, not_resource]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - excluded: [resource]
   carrier_primary_in:
-      type: str
-      doc: Selects the primary input carrier to associate with costs & constraints (if multiple primary input carriers are assigned).
-      optional: True
-      validator: [inheritance, carrier_validation]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - direction: 'in'
+    type: str
+    doc: Selects the primary input carrier to associate with costs & constraints (if multiple primary input carriers are assigned).
+    optional: True
+    validator: [inheritance, carrier_validation]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - direction: "in"
   carrier_primary_out:
-      type: str
-      doc: Selects the primary output carrier to associate with costs & constraints (if multiple primary output carriers are assigned).
-      optional: True
-      validator: [inheritance, carrier_validation]
-      validator_params:
-        - allowed_in: [conversion_plus]
-        - direction: 'out'
+    type: str
+    doc: Selects the primary output carrier to associate with costs & constraints (if multiple primary output carriers are assigned).
+    optional: True
+    validator: [inheritance, carrier_validation]
+    validator_params:
+      - allowed_in: [conversion_plus]
+      - direction: "out"
   carrier_export:
-      type: str
-      doc: choice of carrier that can be exported, if choosing to allow the technology to export
-      optional: True
-      validator: [inheritance, carrier_validation]
-      validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
-        - direction: 'out'
+    type: str
+    doc: choice of carrier that can be exported, if choosing to allow the technology to export
+    optional: True
+    validator: [inheritance, carrier_validation]
+    validator_params:
+      - allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
+      - direction: "out"
   color:
     type: Color
     doc: Color to use for plotting. If not defined, a random one will be chosen.
@@ -95,6 +111,7 @@ essentials:
         allowed_in: [conversion_plus]
       in:
         # FIXME: CarrierClassDict: custom type to implement: Dict[str, Union[float, FileWithSubset]]
+        # see checks.py:437-454
         type: Dict
         opts: [str, PositiveFloat]
         doc: Ratio of output of each carrier in `in` to the summed output of carriers in `in`
@@ -169,7 +186,15 @@ essentials:
       doc: Specific installed energy capacity, fixes maximum/minimum if decision variables ``carrier_prod``/``carrier_con`` and overrides ``_max`` and ``_min`` constraints.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_equals_systemwide:
       type: PositiveFloat
       scaling_label: power
@@ -177,7 +202,15 @@ essentials:
       doc: System-wide specific installed energy capacity, fixes the sum to a maximum/minimum, for a particular technology, of the decision variables ``carrier_prod``/``carrier_con`` over all locations.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_max:
       type: PositiveFloat
       scaling_label: power
@@ -185,7 +218,15 @@ essentials:
       doc: Maximum installed energy capacity, limits decision variables ``carrier_prod``/``carrier_con`` to a maximum/minimum.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_max_systemwide:
       type: PositiveFloat
       scaling_label: power
@@ -193,7 +234,15 @@ essentials:
       doc: System-wide maximum installed energy capacity, limits the sum to a maximum/minimum, for a particular technology, of the decision variables ``carrier_prod``/``carrier_con`` over all locations.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_min:
       type: PositiveFloat
       scaling_label: power
@@ -201,15 +250,31 @@ essentials:
       doc: Minimum installed energy capacity, limits decision variables ``carrier_prod``/``carrier_con`` to a minimum/maximum.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_min_use:
       type: confloat
       default: 0.4
-      opts: {ge: 0.1, le: 1}
-      doc: Minimum carrier production, set to a value between 0 and 1 to force minimum carrier production as a fraction of the technology maximum energy capacity. If non-zero and technology is not defined by ``units``, this will force the technology to operate above its minimum value at every timestep.
+      opts: { ge: 0.1, le: 1 }
+      doc: Minimum carrier production, set to a value between 0 and 1 to minimum carrier production as a fraction of the technology maximum energy capacity. If non-zero and technology is not defined by ``units``, this will force the technology to operate above its minimum value at every timestep.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_per_unit:
       type: PositiveFloat
       scaling_label: power_per_unit
@@ -217,14 +282,30 @@ essentials:
       doc: Energy capacity per purchased unit, set the capacity of each integer unit of a technology purchased.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_cap_scale:
       type: PositiveFloat
       default: 1.0
       doc: Energy capacity scale, scale all ``energy_cap`` min/max/equals/total_max/total_equals constraints by this value.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_con:
       type: bool
       default: False
@@ -234,15 +315,23 @@ essentials:
         allowed_in: [conversion, conversion_plus, storage, transmission, demand]
     energy_eff:
       type: confloat # FIXME: also allow FileWithSubset
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       default: 1.0
       doc: Energy efficiency, conversion efficiency (static, or from file as timeseries), from ``resource``/``storage``/``carrier_in`` (tech dependent) to ``carrier_out``.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_eff_per_distance:
       type: confloat # FIXME: also allow FileWithSubset
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       scaling_label: per_distance
       default: 1.0
       doc: Energy efficiency per distance, set as value between 1 (no loss) and 0 (all energy lost).
@@ -255,12 +344,20 @@ essentials:
       doc: Energy production, allow this technology to supply energy to the carrier.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     energy_ramping:
       type: confloat
       scaling_label: per_hour
       default: 1
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Ramping rate, limit maximum carrier production to a fraction of maximum capacity, which increases by that fraction at each timestep.
       validator: inheritance
       validator_params:
@@ -296,7 +393,15 @@ essentials:
       doc: Technology lifetime, must be defined if fixed capital costs are defined. A reasonable value for many technologies is around 20-25 years.
       validator: inheritance
       validator_params:
-        allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        allowed_in:
+          [
+            supply,
+            supply_plus,
+            conversion,
+            conversion_plus,
+            storage,
+            transmission,
+          ]
     one_way:
       type: bool
       default: False
@@ -306,7 +411,7 @@ essentials:
         allowed_in: [transmission]
     parasitic_eff:
       type: confloat # FIXME: also allow FileWithSubset
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       default: 1.0
       doc: Plant parasitic efficiency, additional losses as energy gets transferred from the plant to the carrier (static, or from file as timeseries), e.g. due to plant parasitic consumption.
       validator: inheritance
@@ -316,9 +421,12 @@ essentials:
       type: PositiveFloat # FIXME: also allow FileWithSubset
       default: 0
       doc: Available resource, maximum available resource (static, or from file as timeseries). Unit dictated by ``resource_unit``. Unit can be energy, energy per unit area, or energy per unit technology capacity.
-      validator: inheritance
+      validator:
+        - inheritance
+        - check_resource_sign
       validator_params:
-        allowed_in: [demand, supply, supply_plus]
+        - allowed_in: [demand, supply, supply_plus]
+        - {}
     resource_area_equals:
       type: PositiveFloat
       scaling_label: area
@@ -379,7 +487,7 @@ essentials:
     resource_eff:
       type: confloat # FIXME: also allow FileWithSubset
       default: 1.0
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Resource efficiency, efficiency (static, or from file as timeseries) in capturing resource before it reaches storage (if storage is present) or conversion to carrier.
       validator: inheritance
       validator_params:
@@ -387,7 +495,7 @@ essentials:
     resource_min_use:
       type: confloat
       default: 0
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Minimum resource consumption, set to a value between 0 and 1 to force minimum resource consumption for production technologies.
       validator: inheritance
       validator_params:
@@ -395,12 +503,12 @@ essentials:
     resource_scale:
       type: confloat
       default: 1.0
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Resource scale, scale resource (either static value or all values in timeseries) by this value.
       validator: inheritance
       validator_params:
         allowed_in: [demand, supply, supply_plus]
-    resource_unit:  # FIXME this needs a better solution
+    resource_unit: # FIXME this needs a better solution
       type: str
       default: energy
       doc: Resource unit, sets the unit of ``resource`` to either ``energy`` (e.g. kWh), ``energy_per_area`` (e.g. kWh/m2), or ``energy_per_cap`` (e.g. kWh/kW). ``energy_per_area`` uses the ``resource_area`` decision variable to scale the available resource while ``energy_per_cap`` uses the ``energy_cap`` decision variable.
@@ -441,7 +549,7 @@ essentials:
     storage_discharge_depth:
       type: confloat
       default: 0
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Storage depth of discharge, defines the minimum level of storage state of charge, as a fraction of total storage capacity.
       validator: inheritance
       validator_params:
@@ -449,7 +557,7 @@ essentials:
     storage_initial:
       type: confloat
       default: 0
-      opts: {ge: 0, le: 1}
+      opts: { ge: 0, le: 1 }
       doc: Initial storage level, set stored energy in device at the first timestep, as a fraction of total storage capacity.
       validator:
         - inheritance
@@ -461,7 +569,7 @@ essentials:
       type: confloat # FIXME:, FileWithSubset]
       scaling_label: per_time
       default: 0
-      opts: {ge: 0}
+      opts: { ge: 0 }
       doc: Storage loss rate, rate of storage loss per hour (static, or from file as timeseries), used to calculate lost stored energy as ``(1 - storage_loss)^hours_per_timestep``.
       validator: inheritance
       validator_params:
@@ -472,7 +580,15 @@ essentials:
       doc: Specific number of installed units, specific number of installed units. Turns the model from LP to MILP.
       validator: [inheritance, energy_cap_per_unit]
       validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in:
+            [
+              supply,
+              supply_plus,
+              conversion,
+              conversion_plus,
+              storage,
+              transmission,
+            ]
         - {}
     units_equals_systemwide:
       type: PositiveInt
@@ -482,7 +598,15 @@ essentials:
         - inheritance
         - energy_cap_per_unit
       validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in:
+            [
+              supply,
+              supply_plus,
+              conversion,
+              conversion_plus,
+              storage,
+              transmission,
+            ]
         - {}
     units_max:
       type: PositiveInt
@@ -492,7 +616,15 @@ essentials:
         - inheritance
         - energy_cap_per_unit
       validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in:
+            [
+              supply,
+              supply_plus,
+              conversion,
+              conversion_plus,
+              storage,
+              transmission,
+            ]
         - {}
     units_max_systemwide:
       type: PositiveInt
@@ -502,7 +634,15 @@ essentials:
         - inheritance
         - energy_cap_per_unit
       validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in:
+            [
+              supply,
+              supply_plus,
+              conversion,
+              conversion_plus,
+              storage,
+              transmission,
+            ]
         - {}
     units_min:
       type: PositiveInt
@@ -512,5 +652,13 @@ essentials:
         - inheritance
         - energy_cap_per_unit
       validator_params:
-        - allowed_in: [supply, supply_plus, conversion, conversion_plus, storage, transmission]
+        - allowed_in:
+            [
+              supply,
+              supply_plus,
+              conversion,
+              conversion_plus,
+              storage,
+              transmission,
+            ]
         - {}
