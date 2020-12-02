@@ -1,0 +1,137 @@
+calliope_version:
+  type: Text
+  # validator: calliope_version_validator
+name:
+  type: Text
+random_seed:
+  type: int
+  default: 42
+reserve_margin:
+  type: Dict # TODO: move this out
+  doc: |
+    Per-carrier system-wide reserve margins, defined as key:value
+    pairs of carrier:reserve margin
+group_share:
+  type: Dict
+# file_allowed:
+#   type: List
+#   opts: [str]
+#   doc: add a flag for each resource, that are allowed to have constraints specified by files (e.g. time series)
+# see https://github.com/calliope-project/calliope/blob/rules/calliope/config/defaults.yaml:45
+subset_time:
+  type: List
+  # validator: range_check
+  doc: |
+    Only run the optimisation over a subset of the input timeseries,
+    given as (first timestep, last timestep). Timesteps are
+    inclusive and can be any valid datetime stamp (e.g. '2020',
+    '2020-01', '2020-01-01', and '2020-01-01 00:00' are all valid
+    datetime stamps)
+time:
+  type: Dict
+# time_aggregation:
+#   validator: time_aggregation_validation
+#   masks: # TODO: list of dictionaries, a list (of abritrary length) of dictionaries which can't be validated
+#     - validator: mask_validation
+#       function:
+#         type: Literal
+#         opts: [extreme, extreme_diff]
+#       options:
+#         var:
+#           type: Text
+#           validator: mask_options_var_validation
+#           doc: |
+#             Constraint parameter from which timeseries data is
+#             acquired, e.g. `resource`
+#         length:
+#           type: Text  # pandas.Timedelta
+#           doc: "Length of time to mask"
+#         n:
+#           type: int
+#           doc: |
+#             Number of masks to define TODO: check this is actually the
+#             case
+#         padding:
+#           type: Text  # Union[Literal, pandas.Timedelta]
+#           opts: ['calendar_week']
+#           doc: "Padding either side of the mask"
+#         tech:
+#           type: Text
+#           validator: mask_options_tech_validation
+#           doc: "tech to select data for from 'var'"
+#         tech0:
+#           type: Text
+#           validator: mask_options_tech_validation
+#           doc: "First tech to select data for from 'var'"
+#         tech1:
+#           type: Text
+#           validator: mask_options_tech_validation
+#           doc: "Second tech to select data for from 'var'"
+#         how:
+#           type: Literal
+#           opts: [min, max]
+#           doc: |
+#             Whether to select day masks based on smallest (min)
+#             value/difference or largest (max) value/difference
+#         normalize:
+#           type: bool
+#           default: true
+#           doc: |
+#             Whether or not to normalise the data in 'var' before
+#             attempting masking
+#     - function:
+#         type: Literal
+#         opts: [apply_clustering, resample]
+#         doc: |
+#           Function to apply following any masking. TODO: allow this to
+#           also allow custom functions, not just the above, inbuilt
+#           options
+#       function_options:
+#         validator: function_option_validation
+#         # TODO: maybe storage_inter_cluster goes here, what's the value,
+#         # how to be compatible with the other keys?
+#         clustering_func:
+#           type: Union[Literal, FileWithSubset]
+#           opts: ['kmeans', 'hierarchical']
+#           doc: |
+#             Method to use for clustering. Can be an algorithm or point
+#             to a file explicitly providing the cluster number for each
+#             timestep
+#         how:
+#           type: Literal
+#           opts: [closest, mean]
+#           doc: |
+#             Having conducted clustering, how to generate the
+#             timeseries which is representative of each cluster; either
+#             'mean' (average of all days in a cluster) or 'closest'
+#             (day with timeseries closest to the cluster centroid)
+#         k:
+#           type: int
+#           doc: |
+#             Number of clusters at which to stop kmeans clustering. If
+#             not given, number of clusters is decided using Hartigan's
+#             rule
+#         resolution:
+#           type: Text  # pandas.Timedelta
+#           doc: "Resolution to which data should be resampled"
+timeseries_data_path:
+  type: DirectoryPath
+  doc: |
+    Directory in which timeseries data is stored, relative to model
+    configuration file. Whenever you point to a timeseries file in
+    the remainder of the model configuration, it will be relative to
+    this path
+#   timeseries_data:  # TODO: get rid of this, as it is exposing implementation to the user
+#     type: Dict
+#     validator: timeseries_data_validation
+#     doc: |
+#       Dictionary of string:pandas.DataFrame pairs defining the
+#       tineseries data used in the model. This is usually populated by
+#       Calliope, using all instances of `file=` in the model
+#       configuration.
+timeseries_dateformat:
+  type: Text
+  # validator: timeseries_dateformat_validation
+  doc: |
+    datetime format describing the format in which timesteps are
+    stored in timeseries files

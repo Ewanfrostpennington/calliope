@@ -109,7 +109,7 @@ essentials:
       validator: inheritance
       validator_params:
         allowed_in: [conversion_plus]
-      in:
+      in_1:
         # FIXME: CarrierClassDict: custom type to implement: Dict[str, Union[float, FileWithSubset]]
         # see checks.py:437-454
         type: Dict
@@ -126,7 +126,7 @@ essentials:
         opts: [str, PositiveFloat]
         doc: Ratio of output of each carrier in `in_3` to the summed output of carriers in `in`
         default: 1
-      out:
+      out_1:
         type: Dict
         opts: [str, PositiveFloat]
         doc: Ratio of output of each carrier in `out` to the summed output of carriers in `out`

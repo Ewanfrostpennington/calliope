@@ -1,4 +1,3 @@
-validator: node_validation
 exists:
   type: bool
   default: True
@@ -24,14 +23,11 @@ coordinates:
 # The contents of this would then need validating using the techs.yaml
 # Since all data under 'constraints' and 'costs' and 'exists' for a tech can
 # be set here on a per-node basis
-techs:
-  type: Dict
-transmission_node:
-  type: bool
-  doc: "true only if no techs are defined (including complete ommission of the
-  `techs` key). Automatically added during processing if not defined by user."
+# transmission_node:
+#   type: bool
+#   doc: "true only if no techs are defined (including complete ommission of the
+#   `techs` key). Automatically added during processing if not defined by user."
 available_area:  # TODO: decide if worth removing in favour of group constraints
   type: float
   doc: "This node's available land area, used to constrain technology deployment
   for those technologies with resource availability dependent on area."
-

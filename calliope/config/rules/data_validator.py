@@ -1,5 +1,28 @@
 from itertools import product
 
+import calliope
+
+__all__ = [
+    "inheritance",
+    "carrier_validation",
+    "not_resource",
+    "cost_class_validation",
+    "node_coordinate_validation",
+    "node_validation",
+    "error_if_a_technology_is_defined_twice_in_opposite_directions",
+    "export_cost_validation",
+    "energy_cap_per_unit",
+    "storage_cap_per_unit",
+    "finite_forced_resource",
+    "gte_storage_discharge_depth",
+    "loc_tech_cannot_have_force_resource_and_infinite_resource",
+    "ensure_that_if_a_tech_has_negative_costs_there_is_a_max_cap_defined",
+    "check_resource_sign",
+    "supply_only_allowed_positive_resource",
+    "calliope_version_validator",
+    "contains_keys",
+]
+
 
 def inheritance(cls, val, values, *, allowed_in):
     # if issubclass(cls, allowed_in):  # FIXME: get the types
@@ -22,9 +45,12 @@ def carrier_validation(cls, val, values, *, direction):
         return val
     else:
         # raise ValueError(f"Primary carrier {direction} {val} not defined as a carrier for this technology")  # FIXME: do we know what the tech name is?
-        raise ValueError(f"`{tech}` at `{loc}` is attempting to export a carrier "
-                "not given as an output carrier: `{export}`")
-                # see checks.py:530
+        raise ValueError(
+            f"`{tech}` at `{loc}` is attempting to export a carrier "
+            "not given as an output carrier: `{export}`"
+        )
+        # see checks.py:530
+
 
 def not_resource(cls, val, values, *, excluded):
     """
@@ -32,7 +58,9 @@ def not_resource(cls, val, values, *, excluded):
     """
     defined_exclusions = set(val).intersection(excluded)
     if defined_exclusions:
-        raise ValueError(f"Cannot define the carrier(s) {defined_exclusions} within {cls}")
+        raise ValueError(
+            f"Cannot define the carrier(s) {defined_exclusions} within {cls}"
+        )
     return val
 
 
@@ -42,6 +70,7 @@ def cost_class_validation():
     options match those defined as cost classes in the data.
     NOTE: this should cover all instances of CostClassDict!
     """
+
 
 def node_coordinate_validation(cls, val, values, *, coordinate_systems):
     """Can only define [x, y] or [lat, lon], no other combination of keys,
@@ -56,7 +85,9 @@ def node_coordinate_validation(cls, val, values, *, coordinate_systems):
     if coord_sys in coordinate_systems:
         return val
     else:
-        raise ValueError("Incompatible coordinate systems: allowed combinations {x, y} or {lat, lon}")
+        raise ValueError(
+            "Incompatible coordinate systems: allowed combinations {x, y} or {lat, lon}"
+        )
 
 
 def node_validation():
@@ -66,10 +97,12 @@ def node_validation():
     could possibly be removed entirely
     """
 
+
 def error_if_a_technology_is_defined_twice_in_opposite_directions():
     """
     What the function name says.
     """
+
 
 # def objective_options_validation(
 #     key: str, keys: Sequence[str], **opts
@@ -86,38 +119,46 @@ def error_if_a_technology_is_defined_twice_in_opposite_directions():
 
 #     return {"objective_options_validation", _objective_options_validation}
 
+
 def export_cost_validation():
     """
     Can only define an export cost if an export carrier has been defined for the same technology
     """
 
+
 def energy_cap_per_unit(cls, val, values, /):
     """
     If units are defined, then energy_cap_per_unit must be specified.
     """
-    dependent_val = values.get('energy_cap_per_unit', None)
+    dependent_val = values.get("energy_cap_per_unit", None)
     if dependent_val is not None:
         return val
     else:
-        raise ValueError("If units are defined, then energy_cap_per_unit must be specified.")
+        raise ValueError(
+            "If units are defined, then energy_cap_per_unit must be specified."
+        )
+
 
 def storage_cap_per_unit(cls, val, values, /):
     """
     If units are defined (and storage is in the inheritance...), then storage_cap_per_unit must be specified.
     """
-    dependent_val = values.get('storage_cap_per_unit', None)
+    dependent_val = values.get("storage_cap_per_unit", None)
     storage_in_hierarchy = False  # TODO: Fixme, is a placeholder now
     if dependent_val is not None and storage_in_hierarchy:
         return val
     else:
-        raise ValueError("If units are defined (and storage is in the inheritance...), "
-                         "then storage_cap_per_unit must be specified.")
+        raise ValueError(
+            "If units are defined (and storage is in the inheritance...), "
+            "then storage_cap_per_unit must be specified."
+        )
+
 
 def finite_forced_resource(cls, val, values, /):
     """
     If a resource value is forced, this value cannot be infinite.
     """
-    resource_val = values.get('resource', None)
+    resource_val = values.get("resource", None)
     if np.isinf(resource_val):
         raise ValueError("Can't be infinte")
     elif isinstance(resource_val, str):
@@ -134,19 +175,24 @@ def gte_storage_discharge_depth(cls, val, values, /):
     If defining both `storage_initial` and `storage_discharge_depth`
     then `storage_initial` >= `storage_discharge_depth`
     """
-    storage_dod_val = values.get('storage_discharge_depth', 0)
+    storage_dod_val = values.get("storage_discharge_depth", 0)
     if val >= storage_dod_val:
         return val
     else:
-        raise ValueError("""If defining both `storage_initial` and `storage_discharge_depth` then `storage_initial` >= `storage_discharge_depth`""")
+        raise ValueError(
+            """If defining both `storage_initial` and `storage_discharge_depth` then `storage_initial` >= `storage_discharge_depth`"""
+        )
+
 
 ##
 # Timeseries specific things follow below
 ##
 
+
 def loc_tech_cannot_have_force_resource_and_infinite_resource():
     # TODO: Probably not needed, covered by finite_forced_resource
     pass
+
 
 def ensure_that_if_a_tech_has_negative_costs_there_is_a_max_cap_defined():
     caps = ["energy_cap", "storage_cap", "resource_cap", "resource_area"]
@@ -155,33 +201,43 @@ def ensure_that_if_a_tech_has_negative_costs_there_is_a_max_cap_defined():
     # constraints.$CAPS_max need to be specified and finite
     costs = ["cost_" + i in model_data.data_vars.keys()]
 
+
 # for loc_techs_demand see preprocess/checks.py:840
-def check_resource_sign(cls, val, values, *):
-    resource_ts_val = get_timeseries_data(val) 
+def check_resource_sign(cls, val, values, /):
+    resource_ts_val = get_timeseries_data(val)
     # TODO: get_timeseries_data should be a key in timeseries_dataframes dictionary
     # demand is usually time series, but may also be fixed value
-    # check if inherits from demand or supply(-like) 
+    # check if inherits from demand or supply(-like)
     if cls.inherits_from(demand):
         if (resource_ts_val > 0).any():
-            raise ValueError("Positive resource given for demand loc_tech {}. All demands "
-                    "must have negative resource".format(loc_tech)) # FIXME: 
-    else:   # inherits from supply
+            raise ValueError(
+                "Positive resource given for demand loc_tech {}. All demands "
+                "must have negative resource".format(loc_tech)
+            )  # FIXME:
+    else:  # inherits from supply
         if (resource_ts_val < 0).any():
-            raise ValueError("Negative resource given for supply loc_tech {}. All resources "
-                    "must have positive resource".format(loc_tech))  # FIXME
+            raise ValueError(
+                "Negative resource given for supply loc_tech {}. All resources "
+                "must have positive resource".format(loc_tech)
+            )  # FIXME
     return val
+
 
 # opposite logic as above
 def supply_only_allowed_positive_resource():
     pass
 
+
 def calliope_version_validator(cls, val, values, /):
     if calliope.__version__ != val:
         # currently raises a model warning, meaning you can still run, retain the behaviour
         # unit tests often check for specific errors/warnings, ensure error message doesn't change
-        raise ValueError(f"Model configuration specifies calliope_version={val}, "
-                "but you are running {calliope.__verison__}. Proceed with caution!")
+        raise ValueError(
+            f"Model configuration specifies calliope_version={val}, "
+            f"but you are running {calliope.__version__}. Proceed with caution!"
+        )
     return val
+
 
 # this is a root validator to be applied at the technology definition level
 def contains_keys(cls, val, *, desired_keys):
@@ -194,6 +250,8 @@ def contains_keys(cls, val, *, desired_keys):
     else:
         # change to log, current implementation doesn't throw error
         # loc + tech are part of the val name, so extract & split to match msg below
-        raise ValueError(f"`{tech}`` at `{loc}` has no constraint to explicitly connect `energy_cap` to "
+        raise ValueError(
+            f"`{tech}` at `{loc}` has no constraint to explicitly connect `energy_cap` to "
             "`storage_cap`, consider defining a `energy_cap_per_storage_cap_min/max/equals` "
-            "constraint")
+            "constraint"
+        )
